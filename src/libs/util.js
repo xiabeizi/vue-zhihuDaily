@@ -1,3 +1,7 @@
+//requestAnimationFrame 兼容ie9及以下
+window.requestAnimationFrame = window.requestAnimationFrame || function (fn) { return setTimeout(fn, 1000 / 60) }
+window.cancelAnimationFrame = window.cancelAnimationFrame || clearTimeout;
+
 const Util = {
 
     imgPath: 'http://127.0.0.1:8011/img/',
@@ -30,6 +34,25 @@ const Util = {
 
         const prevTimeStamp = PrevDay - 24 * 60 * 60 * 1000;
         return this.formatTime(prevTimeStamp);
+    },
+
+    //平滑滚动回顶部处理
+    scrollToTop(el) {
+        const scrollToTop = (el) => {
+            let c = 0;
+            if (el == document) {
+                c = el.documentElement.scrollTop || el.body.scrollTop;
+            } else {
+                c = el.scrollTop;
+            }
+            if (c > 0) {
+                window.requestAnimationFrame(function () {
+                    scrollToTop(el);
+                });
+                el == document ? window.scrollTo(0, c - c / 8) : el.scrollTo(0, c - c / 8);
+            }
+        };
+        scrollToTop(el);
     },
 
 };

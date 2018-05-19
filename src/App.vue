@@ -12,13 +12,21 @@ import dailyList from "./components/daily-list.vue";
 import ojbk from "./components/daily-artticle.vue";
 
 export default {
-  components: { dailyMenu, dailyList, ojbk}
+  components: { dailyMenu, dailyList, ojbk }
 };
 </script>
 
 <style>
+html,
+body {
+  height: 100%;
+}
 body {
   color: #657180;
   font-size: 16px;
+}
+.daily {
+  width: 100%;
+  height: 100%;
 }
 </style>

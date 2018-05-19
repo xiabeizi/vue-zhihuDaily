@@ -1,5 +1,6 @@
 <template>
-    <div class="daily-artticle">
+    <div class="daily-artticle" ref="scrollbody">
+        <loading :loading="isLoading"></loading>
         <h2 class="daily-artticle-title">
             {{artticle.title}}
         </h2>
@@ -12,17 +13,21 @@
 import axios from "axios";
 import bus from "./bus.js";
 import util from "../libs/util.js";
+import loading from "./loading.vue";
 
 export default {
+  components: { loading },
   data() {
     return {
       id: 0,
       artticle: {},
+      isLoading: true,
       imgPath: util.imgPath
     };
   },
   methods: {
     getDetail(id) {
+      this.isLoading = true;
       axios
         .get("/zhihu/contents/" + id)
         .then(response => {
@@ -38,7 +43,10 @@ export default {
           );
           this.artticle = response.data.CONTENTS;
           //返回文章顶端
-          window.scrollTo(0, 0);
+          this.$nextTick(() => {
+            this.isLoading = false;
+            util.scrollToTop(this.$refs.scrollbody);
+          });
         })
         .catch(function(error) {
           console.log(error);
@@ -56,10 +64,12 @@ export default {
 
 <style>
 .daily-artticle {
-  float: left;
+  position: relative;
   margin-left: 450px;
+  height: 100%;
   padding: 10px;
   font-size: 18px;
+  overflow: auto;
 }
 .daily-artticle > h2 {
   margin: 20px;

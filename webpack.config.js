@@ -54,7 +54,7 @@ module.exports = {
           target: 'https://zhihu-daily.leanapp.cn/api/v1/',
           pathRewrite: {"zhihu": ""},
           changeOrigin: true,
-        }
+        },
     }
   },
   performance: {

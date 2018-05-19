@@ -2,8 +2,9 @@
     <div class="daily-list">
         <div v-if="this.type === 'recommend'" class="timeLabel"> {{timeLabel}} </div>
         <div v-else class="timeLabel"> {{themesLabel}} </div>
+        <loading :loading="isLoading"></loading>
         <div class="daily-list-body shadowscroll"
-          ref="itembody"
+          ref="scrollbody"
           v-domscroll="getPrevDay">
           <div class="daily-list-item"
             v-for="(storie,index) in stories" 
@@ -25,15 +26,18 @@ import axios from "axios";
 import bus from "./bus";
 import directive from "./directive.js";
 import util from "../libs/util.js";
+import loading from "./loading.vue";
 
 export default {
+  components: { loading },
   data() {
     return {
       type: "recommend",
-      themesLabel:'',
+      themesLabel: "",
       time: {}, //{time_Api: "20180510", label: "5月10日"}
       stories: [],
-      imgPath: util.imgPath,
+      isLoading: true,
+      imgPath: util.imgPath
     };
   },
   computed: {
@@ -48,13 +52,16 @@ export default {
       this.type = "recommend";
       //设置今天的日期
       this.time = util.formatTime();
+      this.isLoading = true;
 
       axios
         .get("/zhihu/last-stories")
         .then(response => {
           this.stories = response.data.STORIES.stories;
+          //返回文章顶端
           this.$nextTick(() => {
-            this.$refs.itembody.scrollTo(0, 0);
+            this.isLoading = false;
+            util.scrollToTop(this.$refs.scrollbody);
           });
           //通知 daily-artticle 组件，获取列表第一项的文章详情
           this.getDetail(this.stories[0]);
@@ -72,15 +79,18 @@ export default {
         const prevDay = util.getPrevDay(this.time.time_Api);
         //设置日期
         this.time = prevDay;
+        this.isLoading = true;
         axios
           .get("/zhihu/before-stories/" + prevDay.time_Api)
           .then(response => {
-            this.stories = response.data.STORIES.stories;
+            this.stories = [...this.stories, ...response.data.STORIES.stories];
             this.$nextTick(() => {
-              this.$refs.itembody.scrollTo(0, 0);
+              this.isLoading = false;
+              //返回文章顶端
+              // util.scrollToTop(this.$refs.scrollbody);
             });
             //通知 daily-artticle 组件，获取列表第一项的文章详情
-            this.getDetail(this.stories[0]);
+            // this.getDetail(this.stories[0]);
           })
           .catch(function(error) {
             console.log(error);
@@ -90,13 +100,16 @@ export default {
     //获取 主题文章
     switchTheme(id) {
       this.type = "themes"; //隐藏日期
+      this.isLoading = true;
       axios
         .get("/zhihu/themes/" + id)
         .then(response => {
           this.stories = response.data.THEMEDES.stories;
           this.themesLabel = response.data.THEMEDES.name;
+          //返回文章顶端
           this.$nextTick(() => {
-            this.$refs.itembody.scrollTo(0, 0);
+            this.isLoading = false;
+            util.scrollToTop(this.$refs.scrollbody);
           });
           //通知 daily-artticle 组件，获取列表第一项的文章详情
           this.getDetail(this.stories[0]);
@@ -145,6 +158,7 @@ export default {
   text-align: center;
 }
 .daily-list-body {
+  position: relative;
   overflow: auto;
   height: calc(100% - 36px);
 }
