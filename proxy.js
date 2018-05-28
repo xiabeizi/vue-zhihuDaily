@@ -7,12 +7,12 @@ const imgPort = 8011;
 
 // 创建一个 API 代理服务
 const apiServer = http.createServer((req, res) => {
-    const url = 'http://news-at.zhihu.com/api/4' + req.url;
+    const url = '"https://zhihu-daily.leanapp.cn/api/v1/"' + req.url;
     const options = {
         url: url
     };
 
-    function callback (error, response, body) {
+    function callback(error, response, body) {
         if (!error && response.statusCode === 200) {
             // 设置编码类型，否则中文会显示为乱码
             res.setHeader('Content-Type', 'text/plain;charset=UTF-8');
@@ -36,7 +36,7 @@ const imgServer = http.createServer((req, res) => {
         encoding: null
     };
 
-    function callback (error, response, body) {
+    function callback(error, response, body) {
         if (!error && response.statusCode === 200) {
             const contentType = response.headers['content-type'];
             res.setHeader('Content-Type', contentType);

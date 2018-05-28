@@ -1,8 +1,13 @@
-import Vue from 'vue'
-import App from './app.vue'
-import './assets/base.css';
+import Vue from "vue";
+import Api from "./api/api";
+import store from "./store/index";
+import "./assets/base.css";
+import App from "./app.vue";
+
+Vue.prototype.$api = Api;
 
 new Vue({
-  el: '#app',
-  render: h => h(App)
-})
+	store,
+	el: "#app",
+	render: h => h(App)
+});
