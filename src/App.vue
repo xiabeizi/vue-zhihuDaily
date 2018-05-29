@@ -7,13 +7,13 @@
 			<div class="daily-menu-item"
 			     @click="toggleTheme"
 			     :class="{ on: type === 'themes' }">主题日报</div>
-			<transition name="expand">
+			<transition name="fade">
 				<ul v-show="showThemeMenu">
 					<li v-if="menus.length"
 					    v-for="(item,index) in menus"
 					    :key="index">
 						<a href="#"
-						   @click="getThemesContents(item.id,item.name)"
+						   @click="getThemesContents(item)"
 						   :title="item.description">
 							{{item.name}}
 						</a>
@@ -47,10 +47,13 @@ export default {
 			//主题日报的菜单
 			menus: [],
 			//是否显示主题日报的菜单
-			showThemeMenu: true
+			showThemeMenu: true,
+			//点击的主题日报的id
+			themeId: 0
 		};
 	},
 	computed: {
+		//日报的类型
 		type: {
 			get() {
 				return this.$store.state.type;
@@ -59,9 +62,11 @@ export default {
 				this.$store.commit("changeType", { type: type });
 			}
 		},
+		//动态组件的名字
 		menuListComponent() {
 			return this.$store.state.type + "MenuList";
 		}
+		//
 	},
 	methods: {
 		//把日报的类型切换为推荐日报
@@ -69,10 +74,13 @@ export default {
 			this.type = "recommend";
 		},
 		//获取 主题日报 分类
-		getThemesContents(id, name) {
+		getThemesContents(item) {
 			this.type = "themes";
+			//如果主题id相同，不发起请求，使用缓存的动态组件
+			if (this.themeId === item.id) return;
+			this.themeId = item.id;
 			this.$store.commit("menuListsIsLoading", { boolean: true });
-			this.$store.dispatch("getThemesContents", { id, name });
+			this.$store.dispatch("getThemesContents", item);
 		},
 		//显示隐藏 主题菜单
 		toggleTheme() {
@@ -97,12 +105,12 @@ body {
 	font-size: 16px;
 }
 /*动画*/
-.expand-enter,
-.expand-leave-to {
+.fade-enter,
+.fade-leave-to {
 	opacity: 0;
 }
-.expand-enter-active,
-.expand-leave-active {
+.fade-enter-active,
+.fade-leave-active {
 	transition: 0.5s;
 }
 .slide-left-enter,
@@ -112,7 +120,7 @@ body {
 }
 .slide-left-enter-active,
 .slide-left-leave-active {
-	transition: 0.5s;
+	transition: 0.35s;
 }
 
 .daily {
