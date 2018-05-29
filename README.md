@@ -10,7 +10,7 @@
 *   使用`proxy`处理请求`api`时的跨域问题
 *   使用`node`进行图片的代理，处理跨域问题（书上的代码，我并不懂 nodejs）
 
-![10](/assets/10.gif)
+![10](/src/assets/preview.gif)
 
 ###收获
 
